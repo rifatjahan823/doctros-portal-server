@@ -25,6 +25,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
       const bookingCollection = client.db("doctros-portal").collection('bookings');
       const userCollection = client.db("doctros-portal").collection('users');
       const doctorsCollection = client.db("doctros-portal").collection('doctors');
+      const paymentCollection = client.db("doctros-portal").collection('payment');
 
 /******verify JWT********/
 function verifyJWT(req,res,next){
@@ -212,6 +213,23 @@ app.get('/booking/:id',verifyJWT,async(req,res)=>{
   const booking = await bookingCollection.findOne(query);
   res.send(booking)
 })
+
+/******store payment********/
+app.patch('/booking/:id',verifyJWT,async(req,res)=>{
+  const id= req.params.id;
+  const payment = req.body;
+  const query={_id:ObjectId(id)};
+  const updatedDoc = {
+    $set:{
+      paid:true,
+      transactionId:payment.transactionId,
+    }
+  } 
+  const updatedBooking = await bookingCollection.updateOne(query,updatedDoc);
+  const result = await paymentCollection.insertOne(payment );
+  res.send(updatedDoc)
+})
+
 
 
 /******remove available time if user booking it ********/
