@@ -153,7 +153,7 @@ app.put('/user/:email',async(req,res)=>{
     $set:user,
   };
   const result = await userCollection.updateOne(filter, updateDoc, options);
-  const token=jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET);
+   const token=jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET);
   res.send({result,token:token});
 })
 //ADMIN ROLL
@@ -229,6 +229,36 @@ app.patch('/booking/:id',verifyJWT,async(req,res)=>{
   const result = await paymentCollection.insertOne(payment );
   res.send(updatedDoc)
 })
+
+
+/******Send email when user payment********/
+function sendPaymentEmail(booking){
+const{patientEmail,patientName,treatment,date,slot}=booking;
+const email = {
+  from: process.env.EMAIL_SENDER,
+  to: patientEmail,
+  subject: `Your have receved your payment for ${treatment} is on ${date} at ${slot}`,
+  text: `Your Payment for ${treatment} is on ${date} at ${slot}`,
+  html: `
+  <div>
+  <h2>Hello ${patientName}</h2>
+  <h3>Your appoinment ${treatment} is confirmed</h3>
+  <p>Looking forward to Seeing You ${date} at ${slot}</p>
+  <h3>Our Address:Dhaka</h3>
+  <p>Bangladesh</p>
+  <a href='https://web.programming-hero.com/'>Unsubscribe</a>
+  </div>
+  `
+};
+emailClient.sendMail(email, function(err, info){
+  if (err ){
+    console.log(err);
+  }
+  else {
+    console.log('Message sent:',info);
+  }
+});
+}
 
 
 
