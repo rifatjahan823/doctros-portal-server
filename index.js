@@ -192,7 +192,11 @@ app.post('/booking',async(req,res)=>{
   sendAppoinmentEmail(booking)
   return res.send({success:true,result});
 })
-
+// -------get all apppoinment---------
+app.get('/allbooking',async(req,res)=>{
+  const allbooking= await bookingCollection.find().toArray();
+  res.send(allbooking)
+})
 /******show per user appoinment by email********/
 app.get('/booking',verifyJWT,async(req,res)=>{
   const patientEmail = req.query.patientEmail;
