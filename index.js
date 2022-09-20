@@ -120,7 +120,7 @@ app.post('/doctor',verifyJWT,verifyAdmin,async(req,res)=>{
   return res.send(result);
 })
 
-app.get('/doctor',verifyJWT,verifyAdmin,async(req,res)=>{
+app.get('/doctor',verifyJWT,async(req,res)=>{
   const doctor = await doctorsCollection.find().toArray();
   res.send(doctor)
 })
